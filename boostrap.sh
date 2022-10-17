@@ -27,7 +27,7 @@ rm -r install
 # cudnn
 apt install -y libcudnn8=8.1.1.33-1+cuda11.2
 
-# install Qt5
-apt install -y libqt5widgets5 libqt5opengl5 -y
+# install Others
+apt install -y libqt5widgets5 libqt5opengl5 libgstreamer1.0-0 -y
 
 echo -e """\e[1;32m******  ********\e[1m"""
