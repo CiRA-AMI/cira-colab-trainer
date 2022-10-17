@@ -1,8 +1,10 @@
 git clone -b main --depth=1 http://git.cira-lab.com/cira/cira-colab-trainer.git
 
 cd cira-colab-trainer
-unzip install.zip && cp -r install /home/ 
+unzip -qq install.zip && cp -r install /root 
 
 
-mkdir -p /home/.cira_core_install/share
-unzip d.zip && cp -r d /home/.cira_core_install/share
+mkdir -p /root/.cira_core_install/share
+unzip -qq d.zip && cp -r d /root/.cira_core_install/share
+
+echo -e """\e[1;32m******  ********\e[1m"""
