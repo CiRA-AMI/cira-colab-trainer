@@ -20,7 +20,7 @@ apt-get update
 apt-get install ros-melodic-ros-base -y
 
 # opencv
-unzip -o opencv_install.zip
+unzip -qq -o opencv_install.zip
 cp -r install/* /usr/local/
 rm -r install
 
