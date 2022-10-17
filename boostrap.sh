@@ -24,5 +24,7 @@ unzip -o opencv_install.zip
 cp -r install/* /usr/local/
 rm -r install
 
+# cudnn
+apt install libcudnn8=8.1.1.33-1+cuda11.2
 
 echo -e """\e[1;32m******  ********\e[1m"""
