@@ -1,3 +1,8 @@
+if [ -d "cira-colab-trainer" ] 
+then
+    rm -rf cira-colab-trainer 
+fi
+
 git clone -b main --depth=1 http://git.cira-lab.com/cira/cira-colab-trainer.git
 
 cd cira-colab-trainer
