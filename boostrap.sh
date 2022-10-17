@@ -28,6 +28,6 @@ rm -r install
 apt install -y libcudnn8=8.1.1.33-1+cuda11.2
 
 # install Others
-apt install -y libqt5widgets5 libqt5opengl5 libgstreamer1.0-0 -y
+apt install -y libqt5widgets5 libqt5opengl5 libgstreamer1.0-0 libgstreamer-plugins-base1.0-0 -y
 
 echo -e """\e[1;32m******  ********\e[1m"""
