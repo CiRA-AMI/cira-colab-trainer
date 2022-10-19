@@ -1,11 +1,17 @@
-if [ -d "cira-colab-trainer" ] 
+if [ -d "cira-colab-trainer-main" ] 
 then
-    rm -rf cira-colab-trainer 
+    rm -rf cira-colab-trainer-main 
 fi
 
-git clone -b main --depth=1 http://git.cira-lab.com/cira/cira-colab-trainer.git
+if [[ -f "cira-colab-trainer-main.zip" ]]
+then
+    rm -rf cira-colab-trainer-main.zip
+fi
 
-cd cira-colab-trainer
+wget -O cira-colab-trainer-main.zip https://github.com/CiRA-AMI/cira-colab-trainer/archive/refs/heads/main.zip
+unzip -qq cira-colab-trainer-main.zip
+
+cd cira-colab-trainer-main
 unzip -qq install.zip && cp -r install /root 
 rm -r install
 
