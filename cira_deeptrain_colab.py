@@ -20,10 +20,6 @@ if ret != 0:
 else:
   print("CiRA Colab Trainer install complete")
 
-# Mount Drive
-from google.colab import drive
-drive.mount('/content/drive')
-
 #@title Header
 
 import json, time, os, subprocess, shutil, zipfile, pathlib, datetime
@@ -32,6 +28,7 @@ from ipywidgets.widgets.widget_string import Label, Text
 from IPython.display import Javascript, JSON
 from ipyfilechooser import FileChooser
 from google.colab import output
+from google.colab import files
 
 from ipywidgets import (
     link,
@@ -63,7 +60,7 @@ class RepeatTimer(Timer):
             self.function(*self.args, **self.kwargs)
 
 #@title Dataset
-fcImgFolder = FileChooser('/content/drive')
+fcImgFolder = FileChooser('/content')
 fcImgFolder.title = '<b>Image Folder:</b>'
 fcImgFolder.show_only_dirs = True
 fcImgFolder.layout.max_height = '250px'
@@ -74,7 +71,7 @@ def handleFcImgPath(chooser:FileChooser):
 
 fcImgFolder.register_callback(handleFcImgPath)
 
-fcGtfile = FileChooser('/content/drive')
+fcGtfile = FileChooser('/content')
 fcGtfile.title = '<b>GT File:</b>'
 fcGtfile.filter_pattern = '*.gt'
 fcGtfile.layout.max_height = '250px'
@@ -520,16 +517,13 @@ def onExportClicked():
     output.eval_js("setEnabled('bt-export', false)")
     # btExport.disabled = True
 
-    if os.path.exists("/content/drive/MyDrive/cira_colab_export.zip"):
-        os.remove("/content/drive/MyDrive/cira_colab_export.zip")
-
     if os.path.exists("/tmp/deeptrain_gen/data/backup/train.backup"):
         export_filename = (
             datetime.datetime.now().strftime("%Y%m%d_%H_%M_%S") + "_" + str(avg_loss)
         )
 
         with zipfile.ZipFile(
-            "/content/drive/MyDrive/cira_colab_export.zip", mode="w"
+            f"/tmp/{export_filename}.zip", mode="w"
         ) as archive:
             archive.write(
                 "/tmp/deeptrain_gen/data/obj.names",
@@ -544,25 +538,9 @@ def onExportClicked():
                 arcname=f"{export_filename}/train.backup",
             )
 
-        time.sleep(5)
+        files.download(f"/tmp/{export_filename}.zip")
 
-        # shutil.copyfile('/tmp/cira_colab_export.zip', '/content/drive/MyDrive/cira_colab_export.zip')
-        # subprocess.call(['cp','/tmp/cira_colab_export.zip', '/content/drive/MyDrive/cira_colab_export.zip'])
-
-        fid = subprocess.getoutput(
-            "xattr -p 'user.drive.id' '/content/drive/MyDrive/cira_colab_export.zip' "
-        )
-
-        output.eval_js(
-            f"""
-      const anchor = document.createElement('a');
-      anchor.href = 'https://drive.google.com/u/0/uc?id={fid}&export=download';
-      anchor.download = '{export_filename}.zip';
-      anchor.click();
-    """
-        )
-
-        time.sleep(5)
+    time.sleep(5)
     output.eval_js("setEnabled('bt-export', true)")
     # btExport.disabled = False
 
