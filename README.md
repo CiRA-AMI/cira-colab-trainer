@@ -3,5 +3,5 @@
 
 ## tmp
 ```bash
-curl -sLf https://git.cira-lab.com/cira/cira-colab-trainer/-/raw/main/boostrap.sh | bash
+curl -sLf https://raw.githubusercontent.com/CiRA-AMI/cira-colab-trainer/main/boostrap.sh | bash
 ```
