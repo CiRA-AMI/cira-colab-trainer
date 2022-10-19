@@ -441,11 +441,11 @@ def readLogTrain():
             data = f.read()
             if data != "":
                 tmp_jso = json.loads(data)["train_state"]
-                if tmp_jso["intr"] > 0:
-                    tmp_jso["backend"] = "Training - " + tmp_jso["backend"]
-                    if tmp_jso["backend"] == "CPU" :
-                      tmp_jso["backend"] = "Training - CPU !!Please change runtime type to CPU"
-                    jso = tmp_jso
+                if tmp_jso["backend"] == "CPU" :
+                  tmp_jso["backend"] = "Training - CPU !!Please change runtime type to GPU"
+                else :
+                  tmp_jso["backend"] = "Training - " + tmp_jso["backend"]
+                jso = tmp_jso
 
     avg_loss = jso["avg"]
 
