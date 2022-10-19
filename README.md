@@ -1,7 +1,3 @@
 # CiRA Colab Trainer
 
-
-## tmp
-```bash
-!curl -sLf https://raw.githubusercontent.com/CiRA-AMI/cira-colab-trainer/main/boostrap.sh | bash
-```
+- [CiRA DeepTrain Colab](https://colab.research.google.com/drive/1mR7Uw-urnXn-fi94K0ygerxzm9F_2LME?usp=sharing) <br />
