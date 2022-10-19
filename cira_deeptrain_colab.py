@@ -7,7 +7,7 @@ Original file is located at
     https://colab.research.google.com/drive/15p54oOx3LGsF61ptwSXiwR02QFZob20w
 """
 
-#@title Install CiRA Colab Trainer & Mount drive
+#@title Install CiRA Colab Trainer 
 
 # Verbose
 # !curl -sLf https://raw.githubusercontent.com/CiRA-AMI/cira-colab-trainer/main/boostrap.sh | bash && pip install ipywidgets ipyfilechooser
@@ -52,7 +52,7 @@ flexCol = Layout(
     display="flex", flex_flow="column", border="1px solid gray", margin="2px", padding="5px"
 )
 
-wrapLayout = Layout(display="flex", flex_flow="wrap", padding="0px")
+wrapLayout = Layout(display="flex", flex_flow="wrap", grid_gap="8px", padding="0px")
 
 class RepeatTimer(Timer):
     def run(self):
@@ -281,13 +281,11 @@ modelDropdown = Dropdown(
 )
 
 batchSize = BoundedIntText(description="Batch size:", value=8, min=1, max=999, step=1)
-batchSize.layout.width = "150px"
-batchSize.layout.margin = "0 0 0 10px"
+batchSize.layout.width = "170px"
 subDivisions = BoundedIntText(
     description="Sub divisions:", value=8, min=1, max=999, step=1
 )
-subDivisions.layout.width = "150px"
-subDivisions.layout.margin = "0 0 0 10px"
+subDivisions.layout.width = "170px"
 
 labelWarning = Label("Error file not found")
 labelWarning.style.margin = "0"
@@ -445,6 +443,8 @@ def readLogTrain():
                 tmp_jso = json.loads(data)["train_state"]
                 if tmp_jso["intr"] > 0:
                     tmp_jso["backend"] = "Training - " + tmp_jso["backend"]
+                    if tmp_jso["backend"] == "CPU" :
+                      tmp_jso["backend"] = "Training - CPU !!Please change runtime type to CPU"
                     jso = tmp_jso
 
     avg_loss = jso["avg"]
@@ -514,39 +514,58 @@ btExport = HTML(
 
 def onExportClicked():
     global avg_loss
+
+    if not os.path.exists("/tmp/deeptrain_gen/data/backup/train.backup"):
+      return
+
     output.eval_js("setEnabled('bt-export', false)")
-    # btExport.disabled = True
 
-    if os.path.exists("/tmp/deeptrain_gen/data/backup/train.backup"):
-        export_filename = (
-            datetime.datetime.now().strftime("%Y%m%d_%H_%M_%S") + "_" + str(avg_loss)
-        )
+    export_filename = datetime.datetime.now().strftime("%Y%m%d_%H_%M_%S") + "_" + str(avg_loss)
+    tmp_file = f"/tmp/{export_filename}.zip"
 
-        with zipfile.ZipFile(
-            f"/tmp/{export_filename}.zip", mode="w"
-        ) as archive:
-            archive.write(
-                "/tmp/deeptrain_gen/data/obj.names",
-                arcname=f"{export_filename}/obj.data",
-            )
-            archive.write(
-                "/tmp/deeptrain_gen/data/test.cfg",
-                arcname=f"{export_filename}/test.cfg",
-            )
-            archive.write(
-                "/tmp/deeptrain_gen/data/backup/train.backup",
-                arcname=f"{export_filename}/train.backup",
-            )
+    if os.path.exists('/content/drive') :
+      tmp_file = "/content/drive/MyDrive/cira_colab_export.zip"
 
-        files.download(f"/tmp/{export_filename}.zip")
+    if os.path.exists(tmp_file):
+      os.remove(tmp_file)
 
-    time.sleep(5)
+
+    with zipfile.ZipFile(tmp_file, mode="w") as archive:
+      archive.write(
+          "/tmp/deeptrain_gen/data/obj.names",
+          arcname=f"{export_filename}/obj.data",
+      )
+      archive.write(
+          "/tmp/deeptrain_gen/data/test.cfg",
+          arcname=f"{export_filename}/test.cfg",
+      )
+      archive.write(
+          "/tmp/deeptrain_gen/data/backup/train.backup",
+          arcname=f"{export_filename}/train.backup",
+      )
+
+    if not os.path.exists('/content/drive') :
+      files.download(tmp_file)
+      time.sleep(10)
+    else:
+      time.sleep(5)
+      fid = subprocess.getoutput(
+          "xattr -p 'user.drive.id' '/content/drive/MyDrive/cira_colab_export.zip' "
+      )
+
+      output.eval_js(
+          f"""
+        const anchor = document.createElement('a');
+        anchor.href = 'https://drive.google.com/u/0/uc?id={fid}&export=download';
+        anchor.download = '{export_filename}.zip';
+        anchor.click();
+      """
+      )
+      time.sleep(5)
+
     output.eval_js("setEnabled('bt-export', true)")
-    # btExport.disabled = False
-
 
 output.register_callback("onExportClicked", onExportClicked)
-# btExport.on_click(onExportClicked)
 
 checkStop = Checkbox(value=False, description="Stop")
 
@@ -594,10 +613,8 @@ trainingGroup = Box(
 #@title Style
 style = """
 <style>
-button,
-button:active,
-button:focus {
-  outline: none;
+.widget-box .widget-label {
+  width: 100px;
 }
 .p-Collapse-header,
 .p-Collapse-open > .p-Collapse-header {
