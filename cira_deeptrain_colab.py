@@ -21,7 +21,7 @@ else:
   print("CiRA Colab Trainer install complete")
 
 #@title Run test server in backgroud
-!echo "exit" > /tmp/deepdetect_test.cmd
+subprocess.call(['bash', '-c', 'echo "exit" > /tmp/deepdetect_test.cmd'])
 time.sleep(2)
 subprocess.Popen(['bash', '-c', 'source /opt/ros/melodic/setup.bash && source /root/install/setup.bash && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && /root/install/lib/deepdetect_server/deepdetect_server_run --platform offscreen'])
 
