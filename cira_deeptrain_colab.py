@@ -13,16 +13,27 @@ Original file is located at
 # !curl -sLf https://raw.githubusercontent.com/CiRA-AMI/cira-colab-trainer/main/boostrap.sh | bash && pip install ipywidgets ipyfilechooser
 
 # No Verbose
-import subprocess
+import subprocess, time
 ret = subprocess.call(['bash', '-c', 'curl -sLf https://raw.githubusercontent.com/CiRA-AMI/cira-colab-trainer/main/boostrap.sh | bash && pip install ipywidgets ipyfilechooser xattr && rm -rf cira-colab-trainer*'])
 if ret != 0:
   print("CiRA Colab Trainer install error...")
 else:
   print("CiRA Colab Trainer install complete")
 
+#@title Run test server in backgroud
+!echo "exit" > /tmp/deepdetect_test.cmd
+time.sleep(2)
+subprocess.Popen(['bash', '-c', 'source /opt/ros/melodic/setup.bash && source /root/install/setup.bash && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && /root/install/lib/deepdetect_server/deepdetect_server_run --platform offscreen'])
+
+!echo "update" > /tmp/deepdetect_test.cmd
+
+!cat /tmp/deepdetect.log
+
+!cat /tmp/deepdetect.log
+
 #@title Header
 
-import json, time, os, subprocess, shutil, zipfile, pathlib, datetime
+import json, time, os, subprocess, shutil, zipfile, pathlib, datetime, base64
 from threading import Timer
 from ipywidgets.widgets.widget_string import Label, Text
 from IPython.display import Javascript, JSON
@@ -45,14 +56,18 @@ from ipywidgets import (
     FloatSlider,
     Dropdown,
     IntProgress,
-    Accordion
+    Accordion,
+    Tab,
+    Image
 )
 
 flexCol = Layout(
-    display="flex", flex_flow="column", border="1px solid gray", margin="2px", padding="5px"
+    display="flex", flex_flow="column", border="1px solid #a0a0a0", margin="2px", padding="5px"
 )
 
 wrapLayout = Layout(display="flex", flex_flow="wrap", grid_gap="8px", padding="0px")
+
+js = Javascript("")
 
 class RepeatTimer(Timer):
     def run(self):
@@ -471,6 +486,9 @@ def onTrainClicked(p):
     if os.path.exists("/tmp/deeptrain.log"):
         os.remove("/tmp/deeptrain.log")
 
+    if os.path.exists("/tmp/deeptrain_gen/data/backup/train.backup"):
+      os.remove("/tmp/deeptrain_gen/data/backup/train.backup")
+
     btTrain.disabled = True
     subprocess.Popen(
         [
@@ -523,7 +541,7 @@ def onExportClicked():
     export_filename = datetime.datetime.now().strftime("%Y%m%d_%H_%M_%S") + "_" + str(avg_loss)
     tmp_file = f"/tmp/{export_filename}.zip"
 
-    if os.path.exists('/content/drive') :
+    if os.path.exists('/content/drive__') :
       tmp_file = "/content/drive/MyDrive/cira_colab_export.zip"
 
     if os.path.exists(tmp_file):
@@ -533,7 +551,7 @@ def onExportClicked():
     with zipfile.ZipFile(tmp_file, mode="w") as archive:
       archive.write(
           "/tmp/deeptrain_gen/data/obj.names",
-          arcname=f"{export_filename}/obj.data",
+          arcname=f"{export_filename}/obj.names",
       )
       archive.write(
           "/tmp/deeptrain_gen/data/test.cfg",
@@ -541,10 +559,10 @@ def onExportClicked():
       )
       archive.write(
           "/tmp/deeptrain_gen/data/backup/train.backup",
-          arcname=f"{export_filename}/train.backup",
+          arcname=f"{export_filename}/train.weights",
       )
 
-    if not os.path.exists('/content/drive') :
+    if not os.path.exists('/content/drive__') :
       files.download(tmp_file)
       time.sleep(10)
     else:
@@ -571,7 +589,7 @@ checkStop = Checkbox(value=False, description="Stop")
 
 trainingGroup = Box(
     [
-        HTML("<h3 class='text-lg font-bold'>● Training</h3>"),
+        HTML("<h3 class='text-lg font-bold'>● Train</h3>"),
         VBox(
             [
                 HBox(
@@ -592,7 +610,7 @@ trainingGroup = Box(
                             [
                                 HTML("<h2 class='text-xl' id='backend'>---</h2>"),
                                 HTML(
-                                    "<h1 class='text-4xl'>Avg loss: <span id='avg-loss'>-</span></h1>"
+                                    "<h1 class='text-3xl'>Avg loss: <span id='avg-loss'>-</span></h1>"
                                 ),
                                 HTML(
                                     "<h2 class='text-xl'>iteration: <span id='iteration'>-</span></h2>"
@@ -607,12 +625,244 @@ trainingGroup = Box(
             layout=Layout(display="flex", padding="0 0 0 10px"),
         ),
     ],
-    layout=flexCol,
+    layout=Layout(display="flex", flex_flow="column", padding="0"),
 )
+
+#@title Testset
+fcTestImgFolder = FileChooser('/content')
+fcTestImgFolder.title = '<b>Test Image Folder:</b>'
+fcTestImgFolder.show_only_dirs = True
+fcTestImgFolder.layout.max_height = '250px'
+
+imgList = []
+
+def getImageTestset():
+  if fcTestImgFolder.selected is not None:
+    image.value = b''
+    imgList.clear()
+    d = pathlib.Path(fcTestImgFolder.selected)
+    for entry in d.iterdir():
+        if entry.is_file():
+            imgList.append(entry.name)
+    imgList.sort()
+
+def handleTestFcImgPath(chooser:FileChooser):
+  getImageTestset()
+  if len(imgList) > 0:
+    output.eval_js(f"setTestImageList({imgList})")
+
+fcTestImgFolder.register_callback(handleTestFcImgPath)
+
+def onReloadTestset():
+  getImageTestset()
+  return JSON(imgList)
+
+output.register_callback('onReloadTestset', onReloadTestset)
+
+testsetJS = Javascript("""
+async function onReloadTestset() {
+  const res = await google.colab.kernel.invokeFunction('onReloadTestset', [], {});
+  const result = res.data['application/json'];
+  setTestImageList(result);
+}
+""")
+
+js.data += testsetJS.data;
+
+btReloadTestset = HTML(
+    '''<button id="bt-reload-model" onclick="onReloadTestset()"
+    class="px-6 my-2 bg-blue-100 text-gray-800 font-bold rounded shadow-md enabled:hover:bg-blue-200 enabled:hover:shadow-lg enabled:active:bg-blue-300 enabled:active:shadow-lg disabled:opacity-50"
+    >Reload</button>'''
+)
+
+testsetGroup = Box([HTML("<h3 class='text-lg font-bold'>● Data test</h3>"), fcTestImgFolder, btReloadTestset], layout=Layout(display="flex", flex_flow="column", padding="0"))
+
+#@title Testing
+btUpdateModel = HTML(
+    '''<button id="bt-update-model" onclick="onUpdateModel()"
+    class="whitespace-nowrap px-6 bg-blue-100 text-gray-800 font-bold rounded shadow-md enabled:hover:bg-blue-200 enabled:hover:shadow-lg enabled:active:bg-blue-300 enabled:active:shadow-lg disabled:opacity-50"
+    >Update model</button>'''
+)
+
+btPrev = HTML(
+    '''<button id="bt-prev" onclick="prev()"
+    class="whitespace-nowrap px-6 bg-purple-400 text-gray-800 font-bold rounded shadow-md enabled:hover:bg-purple-500 enabled:hover:shadow-lg enabled:active:bg-purple-600 enabled:active:shadow-lg disabled:opacity-50" 
+    disabled>< Prev</button>'''
+)
+btNext = HTML(
+    '''<button id="bt-next" onclick="next()"
+    class="whitespace-nowrap px-6 bg-purple-400 text-gray-800 font-bold rounded shadow-md enabled:hover:bg-purple-500 enabled:hover:shadow-lg enabled:active:bg-purple-600 enabled:active:shadow-lg disabled:opacity-50" 
+    disabled>Next ></button>'''
+)
+
+def onUpdateModel():
+
+  train_data = {}
+  train_data["avg"] = "-"
+  train_data["intr"] = "-"
+  if not os.path.exists('/tmp/deeptrain_gen/data/backup/train.backup') :
+    return JSON(train_data)
+  
+  shutil.copyfile('/tmp/deeptrain_gen/data/obj.names', '/tmp/deepdetect_model_test/obj.names')
+  shutil.copyfile('/tmp/deeptrain_gen/data/test.cfg', '/tmp/deepdetect_model_test/test.cfg')
+  shutil.copyfile('/tmp/deeptrain_gen/data/backup/train.backup', '/tmp/deepdetect_model_test/train.weights')
+  subprocess.call(['bash', '-c', 'echo update > /tmp/deepdetect_test.cmd'])
+
+  while not os.path.exists('/tmp/deepdetect.log') :
+    time.sleep(0.1)
+
+  log = {}
+  with open('/tmp/deepdetect.log') as json_file:
+    log = json.load(json_file)
+  while log['state'] == 'update_start':
+    with open('/tmp/deepdetect.log') as json_file:
+      log = json.load(json_file)
+
+  if log['state'] == 'update_end':
+    with open("/tmp/deeptrain.log", "r") as f:
+      train_data = json.load(f)['train_state']
+  return JSON(train_data)
+  #print("update finish ", log)
+
+output.register_callback('onUpdateModel', onUpdateModel)
+
+def updateImage(imgName):
+  if fcTestImgFolder.selected is not None and os.path.exists(f"{fcTestImgFolder.selected}{imgName}"):
+    imgPath = f"{fcTestImgFolder.selected}{imgName}"
+    
+    if os.path.exists("/tmp/deepdetect_result.png"):
+      os.remove("/tmp/deepdetect_result.png")
+    if os.path.exists('/tmp/deepdetect.log'):
+      os.remove('/tmp/deepdetect.log')
+
+    subprocess.call(['bash', '-c', f'echo "test,{imgPath}" > /tmp/deepdetect_test.cmd'])
+
+    while not os.path.exists('/tmp/deepdetect.log') :
+      time.sleep(0.1)
+
+    log = {}
+    log['state'] = 'test_start'
+    if os.path.exists('/tmp/deepdetect.log') :
+      timeout_cnt = 25
+      cnt = 0
+      with open('/tmp/deepdetect.log') as json_file:
+        log = json.load(json_file)
+      while log['state'] != 'test_error' and log['state'] != 'test_end' and cnt < timeout_cnt:
+        with open('/tmp/deepdetect.log') as json_file:
+          log = json.load(json_file)
+          time.sleep(0.05)
+          cnt = cnt+1
+
+      if log['state'] == 'test_end' :
+        if os.path.exists("/tmp/deepdetect_result.png"):
+          imgPath = "/tmp/deepdetect_result.png"
+
+    with open(imgPath, "rb") as image_file:
+      encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+      image.value = f'<img src="data:image/png;base64,{encoded_string}" class="h-full" />'
+
+    # with open(imgPath, "rb") as f:
+    #   img = f.read()
+    #   image.value = img
+    #   image.format = pathlib.Path(imgPath).suffix
+
+output.register_callback('updateImage', updateImage)
+
+testingJS = Javascript('''
+var imgList;
+var currImg = -1;
+var isLoading = false;
+var isUpdateModel = false;
+async function prev() {
+  if (isLoading) {
+    return;
+  }
+  isLoading = true;
+  currImg--;
+  if (currImg == 0) {
+    document.getElementById('bt-prev').disabled = true;
+    currImg = 0;
+  }
+  document.getElementById('lb-loading').classList.remove('hidden');
+  await google.colab.kernel.invokeFunction('updateImage', [imgList[currImg]], {});
+  showImage();
+  if (currImg == imgList.length - 2) {
+    document.getElementById('bt-next').disabled = false;
+  }
+  isLoading = false;
+}
+async function next() {
+  if (isLoading) {
+    return;
+  }
+  isLoading = true;
+  currImg++;
+  if (currImg == imgList.length - 1) {
+    document.getElementById('bt-next').disabled = true;
+    currImg = imgList.length - 1;
+  }
+  document.getElementById('lb-loading').classList.remove('hidden');
+  await google.colab.kernel.invokeFunction('updateImage', [imgList[currImg]], {});
+  showImage();
+  if (currImg == 1) {
+    document.getElementById('bt-prev').disabled = false;
+  }
+  isLoading = false;
+}
+function showImage() {
+  document.getElementById('lb-loading').classList.add('hidden')
+  document.getElementById('img-file-name').innerHTML = imgList[currImg];
+  document.getElementById('lb').innerHTML = (currImg + 1) + ' / ' + imgList.length;
+}
+async function onUpdateModel() {
+  if (isUpdateModel) {
+    return;
+  }
+  isUpdateModel = true;
+  document.getElementById('bt-update-model').disabled = true;
+  const res = await google.colab.kernel.invokeFunction('onUpdateModel', [], {});
+  const result = res.data['application/json'];
+  if (result.hasOwnProperty('avg')) {
+    document.getElementById('lb-model-avg-loss').innerHTML = 'Avg loss: ' + result.avg;
+  }
+  if (result.hasOwnProperty('intr')) {
+    document.getElementById('lb-model-iteration').innerHTML = 'Iteration: ' + result.intr;
+  }
+  isUpdateModel = false;
+  document.getElementById('bt-update-model').disabled = false;
+}
+function setTestImageList(imgPathList) {
+  if (imgPathList.length > 0) {
+    imgList = imgPathList;
+    document.getElementById('lb').innerHTML = '0 / ' + imgList.length;
+    currImg = -1;
+    document.getElementById('bt-next').disabled = false;
+    document.getElementById('img-file-name').innerHTML = '-';
+  }
+}
+''')
+js.data += testingJS.data;
+
+# image = Image()
+# image.layout.max_width = '608px'
+# image.layout.max_height = '608px'
+image = HTML('<img src="data:image/png;base64," />')
+image.layout.height = '304px'
+
+runningGroup = Box([HTML("<h3 class='text-lg font-bold'>● Run test</h3>"), HBox([btUpdateModel, HTML("<div id='lb-model' class='w-48 h-full flex flex-col text-sm self-center'><p id='lb-model-avg-loss'>Avg loss: -</p><p id='lb-model-iteration'>Iteration: -</p></div>"), btPrev, btNext, HTML("<div class='whitespace-nowrap px-8' id='lb'>0 / 0</div>"), HTML('''<div class="w-7" role="status">
+    <svg id="lb-loading" class="hidden w-7 h-7 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+    </svg>
+</div>'''), HTML('<h1 id="img-file-name" class="whitespace-nowrap text-md">-</h1>')], layout=Layout(grid_gap='10px', margin='0 0 2px 0')), image], layout=Layout(display="flex", flex_flow="column"))
 
 #@title Style
 style = """
 <style>
+body {
+  margin: 0;
+  padding: 0;
+}
 .widget-box .widget-label {
   width: 100px;
 }
@@ -627,6 +877,17 @@ style = """
 }
 .p-Collapse-contents {
   padding: 0px 10px 4px 10px;
+}
+.jupyter-widgets.widget-tab > .p-TabBar .p-TabBar-tabLabel {
+  color: var(--colab-primary-text-color);
+  font-size: 16px;
+  text-align: center;
+}
+.jupyter-widgets.widget-tab > .p-TabBar .p-TabBar-tab {
+  padding: 3px;
+}
+.jupyter-widgets.widget-tab > .widget-tab-contents {
+  padding: 0 4px;
 }
 .my-button {
   font-weight: bold;
@@ -673,18 +934,18 @@ style = """
 """
 
 #@title JS
-js = Javascript("""
+mainJS = Javascript("""
 var timer, timerCount;
 var timeStart;
 var isRunning = false;
 
 async function updateTimer() {
-  const result = await google.colab.kernel.invokeFunction('callTimerTrain', [], {});
-  const text = result.data['application/json'];
-  document.getElementById("avg-loss").innerHTML = text.avg;
-  document.getElementById("iteration").innerHTML = text.intr;
+  const res = await google.colab.kernel.invokeFunction('callTimerTrain', [], {});
+  const result = res.data['application/json'];
+  document.getElementById("avg-loss").innerHTML = result.avg;
+  document.getElementById("iteration").innerHTML = result.intr;
   if (isRunning) {
-    document.getElementById("backend").innerHTML = text.backend;
+    document.getElementById("backend").innerHTML = result.backend;
   }
 }
 
@@ -728,20 +989,33 @@ function setEnabled(eid, enable) {
   document.getElementById(eid).disabled = !enable;
 }
 """)
+js.data += mainJS.data;
 
 # @title Display
 genProgress.value = 0
 genProgressLabel.value = "0%"
 
+trainingGroup.layout.min_width = '500px'
+
+tab = Tab(children=[VBox([datasetGroup, augmentConfigGroup, genTrainingGroup]), VBox([HBox([trainingGroup, testsetGroup], layout=wrapLayout), HTML('<div class="w-full h-0.5 bg-gray-300 rounded"></div>'), runningGroup])])
+tab.set_title(0, "DataGen")
+tab.set_title(1, "Train&Test")
+tab.selected_index = 0
+
 display(
-    HTML('''<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> '''),
-    HTML('''<script src="https://cdn.tailwindcss.com"></script>'''),
+    HTML('''
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    '''),
     HTML(style),
     js,
     HTML("""
-    <div class='flex items-end gap-4'>
+    <div class='flex items-end gap-4 mb-1'>
       <img src='https://raw.githubusercontent.com/CiRA-AMI/cira-colab-trainer/main/cira_deeptrain_colab_50.png' width='143px' height='79px' />
       <h1 class='text-2xl font-bold'>CiRA DeepTrain Colab</h1>
     </div>"""),
-    VBox([datasetGroup, augmentConfigGroup, genTrainingGroup, trainingGroup]),
+    tab,
 )
+
+image.value = '<img src="data:image/png;base64," />'
+output.eval_js(f"setTestImageList({imgList})")
