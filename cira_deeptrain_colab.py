@@ -25,12 +25,6 @@ else:
 time.sleep(2)
 subprocess.Popen(['bash', '-c', 'source /opt/ros/melodic/setup.bash && source /root/install/setup.bash && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && /root/install/lib/deepdetect_server/deepdetect_server_run --platform offscreen'])
 
-!echo "update" > /tmp/deepdetect_test.cmd
-
-!cat /tmp/deepdetect.log
-
-!cat /tmp/deepdetect.log
-
 #@title Header
 
 import json, time, os, subprocess, shutil, zipfile, pathlib, datetime, base64
