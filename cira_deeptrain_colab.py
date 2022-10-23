@@ -692,11 +692,11 @@ btNext = HTML(
 def onUpdateModel():
 
   train_data = {}
-  train_data["avg"] = "-"
+  train_data["avg"] = "- (try again)"
   train_data["intr"] = "-"
   if not os.path.exists('/tmp/deeptrain_gen/data/backup/train.backup') :
     return JSON(train_data)
-  
+
   shutil.copyfile('/tmp/deeptrain_gen/data/obj.names', '/tmp/deepdetect_model_test/obj.names')
   shutil.copyfile('/tmp/deeptrain_gen/data/test.cfg', '/tmp/deepdetect_model_test/test.cfg')
   shutil.copyfile('/tmp/deeptrain_gen/data/backup/train.backup', '/tmp/deepdetect_model_test/train.weights')
@@ -708,13 +708,19 @@ def onUpdateModel():
   log = {}
   with open('/tmp/deepdetect.log') as json_file:
     log = json.load(json_file)
-  while log['state'] == 'update_start':
+
+  timeout_cnt = 25
+  cnt = 0
+  while log['state'] == 'update_start' and cnt < timeout_cnt:
     with open('/tmp/deepdetect.log') as json_file:
       log = json.load(json_file)
+    time.sleep(0.05)
+    cnt = cnt+1
 
   if log['state'] == 'update_end':
     with open("/tmp/deeptrain.log", "r") as f:
       train_data = json.load(f)['train_state']
+
   return JSON(train_data)
   #print("update finish ", log)
 
@@ -744,8 +750,8 @@ def updateImage(imgName):
       while log['state'] != 'test_error' and log['state'] != 'test_end' and cnt < timeout_cnt:
         with open('/tmp/deepdetect.log') as json_file:
           log = json.load(json_file)
-          time.sleep(0.05)
-          cnt = cnt+1
+        time.sleep(0.05)
+        cnt = cnt+1
 
       if log['state'] == 'test_end' :
         if os.path.exists("/tmp/deepdetect_result.png"):
