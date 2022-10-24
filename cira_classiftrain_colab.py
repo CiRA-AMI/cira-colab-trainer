@@ -849,7 +849,7 @@ async function onUpdateModel() {
   const res = await google.colab.kernel.invokeFunction('onUpdateModel', [], {});
   const result = res.data['application/json'];
   if (result.hasOwnProperty('avg')) {
-    document.getElementById('lb-model-avg-loss').innerHTML = 'Accuracy : ' + result.acc.toFixed(1) + "%";
+    document.getElementById('lb-model-avg-loss').innerHTML = 'Accuracy : ' + result.acc + "%";
   }
   if (result.hasOwnProperty('intr')) {
     document.getElementById('lb-model-iteration').innerHTML = 'Iteration: ' + result.intr;
