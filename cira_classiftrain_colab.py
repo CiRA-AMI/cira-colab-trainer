@@ -714,7 +714,7 @@ btNext = HTML(
 def onUpdateModel():
 
   train_data = {}
-  train_data["avg"] = "- (try again)"
+  train_data["acc"] = "- (try again)"
   train_data["intr"] = "-"
   if not os.path.exists('/tmp/classiftrain_gen/data_gen/backup/train.backup') :
     return JSON(train_data)
@@ -746,6 +746,7 @@ def onUpdateModel():
   if log['state'] == 'update_end':
     with open("/tmp/classiftrain.log", "r") as f:
       train_data = json.load(f)['train_state']
+      train_data["acc"] = train_data["acc"].toFixed(1) + "%"
 
   return JSON(train_data)
   #print("update finish ", log)
@@ -849,7 +850,7 @@ async function onUpdateModel() {
   const res = await google.colab.kernel.invokeFunction('onUpdateModel', [], {});
   const result = res.data['application/json'];
   if (result.hasOwnProperty('avg')) {
-    document.getElementById('lb-model-avg-loss').innerHTML = 'Accuracy : ' + result.acc + "%";
+    document.getElementById('lb-model-avg-loss').innerHTML = 'Accuracy : ' + result.acc;
   }
   if (result.hasOwnProperty('intr')) {
     document.getElementById('lb-model-iteration').innerHTML = 'Iteration: ' + result.intr;
