@@ -706,7 +706,7 @@ def onUpdateModel():
   cnt = 0
 
   while not os.path.exists('/tmp/deepdetect.log') and cnt < timeout_cnt:
-    time.sleep(0.05)
+    time.sleep(0.1)
     cnt = cnt+1
 
   log = {}
@@ -718,7 +718,7 @@ def onUpdateModel():
   while log['state'] == 'update_start' and cnt < timeout_cnt:
     with open('/tmp/deepdetect.log') as json_file:
       log = json.load(json_file)
-    time.sleep(0.05)
+    time.sleep(0.1)
     cnt = cnt+1
 
   if log['state'] == 'update_end':
