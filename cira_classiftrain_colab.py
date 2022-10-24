@@ -1034,7 +1034,7 @@ display(
     js,
     HTML("""
     <div class='flex items-end gap-4 mb-1'>
-      <img src='https://raw.githubusercontent.com/CiRA-AMI/cira-colab-trainer/main/cira_deeptrain_colab_50.png' width='143px' height='79px' />
+      <img src='https://raw.githubusercontent.com/CiRA-AMI/cira-colab-trainer/main/cira_classiftrain_colab_50.png' width='143px' height='79px' />
       <h1 class='text-2xl font-bold'>CiRA ClassifTrain Colab</h1>
     </div>"""),
     tab,
