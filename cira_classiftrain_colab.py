@@ -746,7 +746,7 @@ def onUpdateModel():
   if log['state'] == 'update_end':
     with open("/tmp/classiftrain.log", "r") as f:
       train_data = json.load(f)['train_state']
-      train_data["acc"] = train_data["acc"] + "%"
+      train_data["acc"] = str(train_data["acc"]) + "%"
 
   return JSON(train_data)
   #print("update finish ", log)
