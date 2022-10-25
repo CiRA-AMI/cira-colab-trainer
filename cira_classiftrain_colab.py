@@ -724,7 +724,7 @@ def onUpdateModel():
   shutil.copyfile('/tmp/classiftrain_gen/data_gen/backup/train.backup', '/tmp/deepclassif_model_test/train.weights')
   subprocess.call(['bash', '-c', 'echo update > /tmp/deepclassif_test.cmd'])
 
-  timeout_cnt = 25
+  timeout_cnt = 50
   cnt = 0
 
   while not os.path.exists('/tmp/deepclassif.log') and cnt < timeout_cnt:
