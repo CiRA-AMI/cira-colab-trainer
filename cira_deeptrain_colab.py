@@ -289,10 +289,10 @@ modelDropdown = Dropdown(
     description="Model:",
 )
 
-batchSize = BoundedIntText(description="Batch size:", value=16, min=1, max=999, step=1)
+batchSize = BoundedIntText(description="Batch size:", value=32, min=1, max=999, step=1)
 batchSize.layout.width = "170px"
 subDivisions = BoundedIntText(
-    description="Sub divisions:", value=4, min=1, max=999, step=1
+    description="Sub divisions:", value=8, min=1, max=999, step=1
 )
 subDivisions.layout.width = "170px"
 
