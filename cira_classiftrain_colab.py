@@ -301,7 +301,7 @@ modelDropdown = Dropdown(
     description="Model:",
 )
 
-batchSize = BoundedIntText(description="Batch size:", value=8, min=1, max=999, step=1)
+batchSize = BoundedIntText(description="Batch size:", value=64, min=1, max=999, step=1)
 batchSize.layout.width = "170px"
 subDivisions = BoundedIntText(
     description="Sub divisions:", value=8, min=1, max=999, step=1
@@ -724,11 +724,11 @@ def onUpdateModel():
   shutil.copyfile('/tmp/classiftrain_gen/data_gen/backup/train.backup', '/tmp/deepclassif_model_test/train.weights')
   subprocess.call(['bash', '-c', 'echo update > /tmp/deepclassif_test.cmd'])
 
-  timeout_cnt = 25
+  timeout_cnt = 50
   cnt = 0
 
   while not os.path.exists('/tmp/deepclassif.log') and cnt < timeout_cnt:
-    time.sleep(0.05)
+    time.sleep(0.1)
     cnt = cnt+1
 
   log = {}
@@ -740,7 +740,7 @@ def onUpdateModel():
   while log['state'] == 'update_start' and cnt < timeout_cnt:
     with open('/tmp/deepclassif.log') as json_file:
       log = json.load(json_file)
-    time.sleep(0.05)
+    time.sleep(0.1)
     cnt = cnt+1
 
   if log['state'] == 'update_end':
