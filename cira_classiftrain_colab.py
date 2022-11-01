@@ -1030,6 +1030,8 @@ tab.set_title(0, "DataGen")
 tab.set_title(1, "Train&Test")
 tab.selected_index = 0
 
+time.sleep(3)
+
 colabCount = "-"
 with open("/tmp/classiftrain_colab.count", "r") as f:
   colabCount = f.read()
