@@ -1030,6 +1030,10 @@ tab.set_title(0, "DataGen")
 tab.set_title(1, "Train&Test")
 tab.selected_index = 0
 
+colabCount = "-"
+with open("/tmp/classiftrain_colab.count", "r") as f:
+  colabCount = f.read()
+
 display(
     HTML('''
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -1037,10 +1041,11 @@ display(
     '''),
     HTML(style),
     js,
-    HTML("""
+    HTML(f"""
     <div class='flex items-end gap-4 mb-1'>
       <img src='https://raw.githubusercontent.com/CiRA-AMI/cira-colab-trainer/main/cira_classiftrain_colab_50.png' width='143px' height='79px' />
       <h1 class='text-2xl font-bold'>CiRA ClassifTrain Colab</h1>
+      <h1>Visitor: {colabCount}</h1>
     </div>"""),
     tab,
 )
