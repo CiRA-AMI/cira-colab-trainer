@@ -10,7 +10,7 @@
 # !curl -sLf https://raw.githubusercontent.com/CiRA-AMI/cira-colab-trainer/main/boostrap.sh | bash && pip install ipywidgets ipyfilechooser
 
 # No Verbose
-import subprocess, time
+import subprocess, time, os
 ret = subprocess.call(['bash', '-c', 'curl -sLf https://raw.githubusercontent.com/CiRA-AMI/cira-colab-trainer/main/boostrap.sh | bash && pip install ipywidgets ipyfilechooser xattr && rm -rf cira-colab-trainer*'])
 if ret != 0:
     print("CiRA Colab Trainer install error...")
@@ -1265,7 +1265,6 @@ else:
 
 
 # In[ ]:
-
 
 
 
