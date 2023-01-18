@@ -1033,8 +1033,9 @@ tab.selected_index = 0
 time.sleep(3)
 
 colabCount = "-"
-with open("/tmp/classiftrain_colab.count", "r") as f:
-  colabCount = f.read()
+if os.path.exists("/tmp/classiftrain_colab.count") :
+    with open("/tmp/classiftrain_colab.count", "r") as f:
+        colabCount = f.read()
 
 display(
     HTML('''
