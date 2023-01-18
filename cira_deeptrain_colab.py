@@ -7,7 +7,7 @@ Original file is located at
     https://colab.research.google.com/drive/15p54oOx3LGsF61ptwSXiwR02QFZob20w
 """
 
-#@title Install CiRA Colab Trainer 
+#@title Install CiRA Colab Trainer
 
 # Verbose
 # !curl -sLf https://raw.githubusercontent.com/CiRA-AMI/cira-colab-trainer/main/boostrap.sh | bash && pip install ipywidgets ipyfilechooser
@@ -519,7 +519,7 @@ btTrainStop.on_click(onTrainStopClicked)
 
 btExport = HTML(
     '''<button type="button" id="bt-export" onclick="onExportClicked()"
-    class="px-6 bg-purple-400 text-gray-800 font-bold rounded shadow-md enabled:hover:bg-purple-500 enabled:hover:shadow-lg enabled:active:bg-purple-600 enabled:active:shadow-lg disabled:opacity-50" 
+    class="px-6 bg-purple-400 text-gray-800 font-bold rounded shadow-md enabled:hover:bg-purple-500 enabled:hover:shadow-lg enabled:active:bg-purple-600 enabled:active:shadow-lg disabled:opacity-50"
     disabled>Export</button>'''
 )
 
@@ -680,12 +680,12 @@ btUpdateModel = HTML(
 
 btPrev = HTML(
     '''<button id="bt-prev" onclick="prev()"
-    class="whitespace-nowrap px-6 bg-purple-400 text-gray-800 font-bold rounded shadow-md enabled:hover:bg-purple-500 enabled:hover:shadow-lg enabled:active:bg-purple-600 enabled:active:shadow-lg disabled:opacity-50" 
+    class="whitespace-nowrap px-6 bg-purple-400 text-gray-800 font-bold rounded shadow-md enabled:hover:bg-purple-500 enabled:hover:shadow-lg enabled:active:bg-purple-600 enabled:active:shadow-lg disabled:opacity-50"
     disabled>< Prev</button>'''
 )
 btNext = HTML(
     '''<button id="bt-next" onclick="next()"
-    class="whitespace-nowrap px-6 bg-purple-400 text-gray-800 font-bold rounded shadow-md enabled:hover:bg-purple-500 enabled:hover:shadow-lg enabled:active:bg-purple-600 enabled:active:shadow-lg disabled:opacity-50" 
+    class="whitespace-nowrap px-6 bg-purple-400 text-gray-800 font-bold rounded shadow-md enabled:hover:bg-purple-500 enabled:hover:shadow-lg enabled:active:bg-purple-600 enabled:active:shadow-lg disabled:opacity-50"
     disabled>Next ></button>'''
 )
 
@@ -733,7 +733,7 @@ output.register_callback('onUpdateModel', onUpdateModel)
 def updateImage(imgName):
   if fcTestImgFolder.selected is not None and os.path.exists(f"{fcTestImgFolder.selected}{imgName}"):
     imgPath = f"{fcTestImgFolder.selected}{imgName}"
-    
+
     if os.path.exists("/tmp/deepdetect_result.png"):
       os.remove("/tmp/deepdetect_result.png")
     if os.path.exists('/tmp/deepdetect.log'):
@@ -1011,7 +1011,7 @@ time.sleep(3)
 colabCount = "-"
 if os.path.exists("/tmp/deeptrain_colab.count") :
     with open("/tmp/deeptrain_colab.count", "r") as f:
-    colabCount = f.read()
+        colabCount = f.read()
 
 display(
     HTML('''
@@ -1031,3 +1031,4 @@ display(
 
 image.value = '<img src="data:image/png;base64," />'
 output.eval_js(f"setTestImageList({imgList})")
+
