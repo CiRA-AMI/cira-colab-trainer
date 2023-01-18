@@ -23,7 +23,7 @@ else:
 #@title Run test server in backgroud
 subprocess.call(['bash', '-c', 'echo "exit" > /tmp/deepclassif_test.cmd'])
 time.sleep(2)
-subprocess.Popen(['bash', '-c', 'source /opt/ros/melodic/setup.bash && source /root/install/setup.bash && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && /root/install/lib/deepclassif_server/deepclassif_server_run --platform offscreen'])
+subprocess.Popen(['bash', '-c', 'source /opt/ros/noetic/setup.bash && source /root/install/setup.bash && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && /root/install/lib/deepclassif_server/deepclassif_server_run --platform offscreen'])
 
 #@title Header
 
@@ -403,7 +403,7 @@ def onGenerateClicked(p):
         [
             "bash",
             "-c",
-            "source /opt/ros/melodic/setup.bash && source /root/install/setup.bash && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && /root/install/lib/cira_colab_classiftrain/cira_colab_classiftrain_run gen --platform offscreen",
+            "source /opt/ros/noetic/setup.bash && source /root/install/setup.bash && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && /root/install/lib/cira_colab_classiftrain/cira_colab_classiftrain_run gen --platform offscreen",
         ]
     )
     timer.cancel()
@@ -512,7 +512,7 @@ def onTrainClicked(p):
         [
             "bash",
             "-c",
-            "source /opt/ros/melodic/setup.bash && source /root/install/setup.bash && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && /root/install/lib/cira_colab_classiftrain/cira_colab_classiftrain_run train --platform offscreen",
+            "source /opt/ros/noetic/setup.bash && source /root/install/setup.bash && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && /root/install/lib/cira_colab_classiftrain/cira_colab_classiftrain_run train --platform offscreen",
         ]
     )
     output.eval_js("setEnabled('bt-export', false)")
