@@ -380,7 +380,7 @@ def onGenerateClicked(p):
         [
             "bash",
             "-c",
-            "source /opt/ros/noetic/setup.bash && source /root/install/setup.bash && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && /root/install/lib/cira_colab_deeptrain/cira_colab_deeptrain_run gen --platform offscreen",
+            "source /root/install/setup.bash && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && /root/install/lib/cira_colab_deeptrain/cira_colab_deeptrain_run gen --platform offscreen",
         ]
     )
     timer.cancel()
@@ -488,7 +488,7 @@ def onTrainClicked(p):
         [
             "bash",
             "-c",
-            "source /opt/ros/noetic/setup.bash && source /root/install/setup.bash && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && /root/install/lib/cira_colab_deeptrain/cira_colab_deeptrain_run train --platform offscreen",
+            "source /root/install/setup.bash && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && /root/install/lib/cira_colab_deeptrain/cira_colab_deeptrain_run train --platform offscreen",
         ]
     )
     output.eval_js("setEnabled('bt-export', false)")
