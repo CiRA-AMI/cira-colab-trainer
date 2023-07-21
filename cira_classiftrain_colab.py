@@ -23,7 +23,7 @@ else:
 #@title Run test server in backgroud
 subprocess.call(['bash', '-c', 'echo "exit" > /tmp/deepclassif_test.cmd'])
 time.sleep(2)
-subprocess.Popen(['bash', '-c', 'source /opt/ros/noetic/setup.bash && source /root/install/setup.bash && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && /root/install/lib/deepclassif_server/deepclassif_server_run --platform offscreen'])
+subprocess.Popen(['bash', '-c', 'source /root/install/setup.bash && export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib && /root/install/lib/deepclassif_server/deepclassif_server_run --platform offscreen'])
 
 #@title Header
 
