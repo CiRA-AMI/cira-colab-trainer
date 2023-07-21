@@ -20,10 +20,12 @@ mkdir -p /root/.cira_core_install/share
 unzip -qq d.zip && cp -r d /root/.cira_core_install/share
 
 # install ros
-sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
-apt update
-apt install -y ros-noetic-ros-base 
+#sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+#apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+#apt update
+#apt install -y ros-noetic-ros-base 
+
+apt install -y ros-base
 
 # opencv
 unzip -qq -o opencv_install.zip
@@ -35,11 +37,11 @@ rm -r install
 #apt install -y libcudnn8=8.1.1.33-1+cuda11.2
 
     apt-key del 7fa2af80
-    wget -P /tmp/ https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin
-    mv /tmp/cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600
-    apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
-    add-apt-repository --remove "deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /"
-    add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /"
+    wget -P /tmp/ https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin
+    mv /tmp/cuda-ubuntu2204.pin /etc/apt/preferences.d/cuda-repository-pin-600
+    apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/3bf863cc.pub
+    #add-apt-repository --remove "deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/ /"
+    add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/ /" -y
     apt-get update
     
     NV_CUDA_LIB_VERSION=11.8.0-1
@@ -54,8 +56,8 @@ rm -r install
     NV_LIBCUBLAS_PACKAGE=${NV_LIBCUBLAS_PACKAGE_NAME}=${NV_LIBCUBLAS_VERSION}
 
     NV_LIBNCCL_PACKAGE_NAME=libnccl2
-    NV_LIBNCCL_PACKAGE_VERSION=2.16.2-1
-    NCCL_VERSION=2.16.2-1
+    NV_LIBNCCL_PACKAGE_VERSION=2.15.5-1
+    NCCL_VERSION=2.15.5-1
     NV_LIBNCCL_PACKAGE=${NV_LIBNCCL_PACKAGE_NAME}=${NV_LIBNCCL_PACKAGE_VERSION}+cuda11.8
 
     apt install -y --no-install-recommends --allow-downgrades \
@@ -86,6 +88,7 @@ rm -r install
 ###########################################################
 
 # install Others
-apt install -y libqt5widgets5 libqt5opengl5 libqt5network5 libgstreamer1.0-0 libgstreamer-plugins-base1.0-0 -y
+apt install -y libqt5widgets5 libqt5opengl5 libqt5network5 -y
+#libgstreamer1.0-0 libgstreamer-plugins-base1.0-0 -y
 
 echo -e """\e[1;32m******  ********\e[1m"""
