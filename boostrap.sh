@@ -36,13 +36,12 @@ rm -r install
 ############ cuda && cudnn #############################
 #apt install -y libcudnn8=8.1.1.33-1+cuda11.2
 
-    apt-key del 7fa2af80
-    wget -P /tmp/ https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin
-    mv /tmp/cuda-ubuntu2204.pin /etc/apt/preferences.d/cuda-repository-pin-600
-    apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/3bf863cc.pub
-    #add-apt-repository --remove "deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/ /"
-    add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/ /" -y
-    apt-get update
+    #apt-key del 7fa2af80
+    #wget -P /tmp/ https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin
+    #mv /tmp/cuda-ubuntu2204.pin /etc/apt/preferences.d/cuda-repository-pin-600
+    #apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/3bf863cc.pub
+    #add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/ /" -y
+    #apt-get update
     
     NV_CUDA_LIB_VERSION=11.8.0-1
 
@@ -60,7 +59,7 @@ rm -r install
     NCCL_VERSION=2.15.5-1
     NV_LIBNCCL_PACKAGE=${NV_LIBNCCL_PACKAGE_NAME}=${NV_LIBNCCL_PACKAGE_VERSION}+cuda11.8
 
-    apt install -y --no-install-recommends --allow-downgrades \
+    apt install -y --no-install-recommends --allow-downgrades --allow-change-held-packages \
     cuda-libraries-11-8=${NV_CUDA_LIB_VERSION} \
     ${NV_LIBNPP_PACKAGE} \
     cuda-nvtx-11-8=${NV_NVTX_VERSION} \
@@ -79,7 +78,7 @@ rm -r install
     NV_CUDNN_PACKAGE="libcudnn8=$NV_CUDNN_VERSION-1+cuda11.8"
     NV_CUDNN_DEV_PACKAGE="libcudnn8-dev=$NV_CUDNN_VERSION-1+cuda11.8"
 
-    apt install -y --no-install-recommends --allow-downgrades ${NV_CUDNN_PACKAGE} 
+    apt install -y --no-install-recommends --allow-downgrades --allow-change-held-packages ${NV_CUDNN_PACKAGE} 
     apt-mark hold ${NV_CUDNN_PACKAGE_NAME}
     
     #for dev
