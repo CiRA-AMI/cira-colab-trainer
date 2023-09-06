@@ -25,6 +25,7 @@ unzip -qq d.zip && cp -r d /root/.cira_core_install/share
 #apt update
 #apt install -y ros-noetic-ros-base 
 
+apt update
 apt install -y ros-base
 
 # opencv
