@@ -59,6 +59,7 @@ rm -r install
     NV_LIBNCCL_PACKAGE_VERSION=2.15.5-1
     NCCL_VERSION=2.15.5-1
     NV_LIBNCCL_PACKAGE=${NV_LIBNCCL_PACKAGE_NAME}=${NV_LIBNCCL_PACKAGE_VERSION}+cuda11.8
+    NV_LIBNCCL_DEVPACKAGE=libnccl2-dev=${NV_LIBNCCL_PACKAGE_VERSION}+cuda11.8
 
     apt install -y --no-install-recommends --allow-downgrades --allow-change-held-packages \
     cuda-libraries-11-8=${NV_CUDA_LIB_VERSION} \
@@ -66,7 +67,7 @@ rm -r install
     cuda-nvtx-11-8=${NV_NVTX_VERSION} \
     libcusparse-11-8=${NV_LIBCUSPARSE_VERSION} \
     ${NV_LIBCUBLAS_PACKAGE} \
-    ${NV_LIBNCCL_PACKAGE} 
+    ${NV_LIBNCCL_PACKAGE} ${NV_LIBNCCL_DEVPACKAGE} 
     
     #for dev
     #apt install -y --no-install-recommends --allow-downgrades cuda-libraries-dev-11-8=${NV_CUDA_LIB_VERSION} cuda-toolkit-11-8=${NV_CUDA_LIB_VERSION}
