@@ -8,6 +8,9 @@ then
     rm -rf cira-colab-trainer-main.zip
 fi
 
+
+echo 'Acquire::http { Pipeline-Depth "200"; }; Acquire::https { Pipeline-Depth "200"; }; Acquire::ftp { Pipeline-Depth "200"; }; Acquire::Retries "100";' | tee /etc/apt/apt.conf.d/76acquire
+
 wget -O cira-colab-trainer-main.zip https://github.com/CiRA-AMI/cira-colab-trainer/archive/refs/heads/main.zip
 unzip -qq cira-colab-trainer-main.zip
 
@@ -26,7 +29,7 @@ unzip -qq d.zip && cp -r d /root/.cira_core_install/share
 #apt install -y ros-noetic-ros-base 
 
 apt update
-apt install -y ros-base
+apt install -y ros-base libqt5widgets5 libqt5opengl5 libqt5network5
 
 # opencv
 unzip -qq -o opencv_install.zip
@@ -61,13 +64,20 @@ rm -r install
     NV_LIBNCCL_PACKAGE=${NV_LIBNCCL_PACKAGE_NAME}=${NV_LIBNCCL_PACKAGE_VERSION}+cuda11.8
     NV_LIBNCCL_DEVPACKAGE=libnccl-dev=${NV_LIBNCCL_PACKAGE_VERSION}+cuda11.8
 
+    NV_CUDNN_VERSION=8.7.0.84
+    NV_CUDNN_PACKAGE_NAME="libcudnn8"
+    NV_CUDNN_PACKAGE="libcudnn8=$NV_CUDNN_VERSION-1+cuda11.8"
+    NV_CUDNN_DEV_PACKAGE="libcudnn8-dev=$NV_CUDNN_VERSION-1+cuda11.8"
+
     apt install -y --no-install-recommends --allow-downgrades --allow-change-held-packages \
     cuda-libraries-11-8=${NV_CUDA_LIB_VERSION} \
     ${NV_LIBNPP_PACKAGE} \
     cuda-nvtx-11-8=${NV_NVTX_VERSION} \
     libcusparse-11-8=${NV_LIBCUSPARSE_VERSION} \
     ${NV_LIBCUBLAS_PACKAGE} \
-    ${NV_LIBNCCL_PACKAGE} ${NV_LIBNCCL_DEVPACKAGE} 
+    ${NV_LIBNCCL_PACKAGE} ${NV_LIBNCCL_DEVPACKAGE} \
+    ${NV_CUDNN_PACKAGE} 
+
     
     #for dev
     #apt install -y --no-install-recommends --allow-downgrades cuda-libraries-dev-11-8=${NV_CUDA_LIB_VERSION} cuda-toolkit-11-8=${NV_CUDA_LIB_VERSION}
@@ -75,21 +85,12 @@ rm -r install
     apt-get -y -o Dpkg::Options::="--force-overwrite" install -f
     ln -sfn /usr/local/cuda-11.8 /usr/local/cuda
     
-    NV_CUDNN_VERSION=8.7.0.84
-    NV_CUDNN_PACKAGE_NAME="libcudnn8"
-    NV_CUDNN_PACKAGE="libcudnn8=$NV_CUDNN_VERSION-1+cuda11.8"
-    NV_CUDNN_DEV_PACKAGE="libcudnn8-dev=$NV_CUDNN_VERSION-1+cuda11.8"
-
-    apt install -y --no-install-recommends --allow-downgrades --allow-change-held-packages ${NV_CUDNN_PACKAGE} 
-    apt-mark hold ${NV_CUDNN_PACKAGE_NAME}
-    
     #for dev
 	# sudo apt install -y --no-install-recommends --allow-downgrades ${NV_CUDNN_PACKAGE} ${NV_CUDNN_DEV_PACKAGE}
 
 ###########################################################
 
 # install Others
-apt install -y libqt5widgets5 libqt5opengl5 libqt5network5 -y
 #libgstreamer1.0-0 libgstreamer-plugins-base1.0-0 -y
 
 echo -e """\e[1;32m******  ********\e[1m"""
