@@ -74,9 +74,9 @@ rm -r install
     ${NV_CUDNN_PACKAGE} \
     ${NV_LIBNPP_PACKAGE} \
     ${NV_LIBCUBLAS_PACKAGE} \
-    ${NV_LIBNCCL_PACKAGE} ${NV_LIBNCCL_DEVPACKAGE} 
-    #cuda-nvtx-11-8=${NV_NVTX_VERSION} \
-    #libcusparse-11-8=${NV_LIBCUSPARSE_VERSION} \
+    ${NV_LIBNCCL_PACKAGE} ${NV_LIBNCCL_DEVPACKAGE} \
+    cuda-nvtx-11-8=${NV_NVTX_VERSION} \
+    libcusparse-11-8=${NV_LIBCUSPARSE_VERSION} 
 
     
     #for dev
