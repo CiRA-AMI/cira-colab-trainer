@@ -71,12 +71,12 @@ rm -r install
 
     apt install -y --no-install-recommends --allow-downgrades --allow-change-held-packages \
     cuda-libraries-11-8=${NV_CUDA_LIB_VERSION} \
+    ${NV_CUDNN_PACKAGE} \
     ${NV_LIBNPP_PACKAGE} \
-    cuda-nvtx-11-8=${NV_NVTX_VERSION} \
-    libcusparse-11-8=${NV_LIBCUSPARSE_VERSION} \
     ${NV_LIBCUBLAS_PACKAGE} \
-    ${NV_LIBNCCL_PACKAGE} ${NV_LIBNCCL_DEVPACKAGE} \
-    ${NV_CUDNN_PACKAGE} 
+    ${NV_LIBNCCL_PACKAGE} ${NV_LIBNCCL_DEVPACKAGE} 
+    #cuda-nvtx-11-8=${NV_NVTX_VERSION} \
+    #libcusparse-11-8=${NV_LIBCUSPARSE_VERSION} \
 
     
     #for dev
